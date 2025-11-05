@@ -1,0 +1,99 @@
+{% extends "layouts/index.html" %} {% block content %}
+<section class="flex flex-col justify-center items-center text-center gap-3">
+    <div class="flex w-full gap-3">
+        <div
+            class="flex flex-col rounded-2xl border border-1-[#f9f9f9] p-10 bg-[#09090a] text-[#f9f9f9] min-h-[520px] min-w-[30%]"
+        >
+            <h1 class="capitalize text-2xl font-semibold mb-3">Clasification Result</h1>
+            <canvas id="chart" height="600"></canvas>
+        </div>
+        <div
+            class="flex flex-col rounded-2xl border border-1-[#f9f9f9] p-10 bg-[#09090a] text-[#f9f9f9] w-full items-center justify-center gap-10"
+        >
+            <div class="flex w-full gap-3 flex-col">
+                <h1 class="capitalize text-2xl font-semibold mb-3">Samples Positive</h1>
+                <table class="rounded-md border">
+                    <thead class="rounded-t">
+                        <tr class="rounded-t-lg">
+                            <th class="border border-1-[#f9f9f9] text-center">No</th>
+                            <th class="border border-1-[#f9f9f9]">Review</th>
+                            <th class="border border-1-[#f9f9f9]">Label</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for index, sample in samples_positive.iterrows() %}
+                        <tr>
+                            <td class="text-center border border-1-[#f9f9f9]">{{ index+1 }}</td>
+                            <td class="border border-1-[#f9f9f9]">{{ sample['review'] }}</td>
+                            <td class="border border-1-[#f9f9f9]">{{ sample['label'] }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="flex w-full gap-3 flex-col">
+                <h1 class="capitalize text-2xl font-semibold mb-3">Samples Negative</h1>
+                <table class="rounded-md border">
+                    <thead class="rounded-t">
+                        <tr class="rounded-t-lg">
+                            <th class="border border-1-[#f9f9f9] text-center">No</th>
+                            <th class="border border-1-[#f9f9f9]">Review</th>
+                            <th class="border border-1-[#f9f9f9]">Label</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for index, sample in samples_negative.iterrows() %}
+                        <tr>
+                            <td class="text-center border border-1-[#f9f9f9]">{{ index+1 }}</td>
+                            <td class="border border-1-[#f9f9f9]">{{ sample['review'] }}</td>
+                            <td class="border border-1-[#f9f9f9]">{{ sample['label'] }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    var chartCtx = document.getElementById("chart").getContext("2d");
+
+    const labels = JSON.parse(`{{ labels_result | tojson }}`);
+    const results = JSON.parse(`{{ counts_result | tojson }}`);
+    const bg = ["rgba(59, 130, 246, 0.8)", "rgba(59, 130, 246, 0.2)"];
+
+
+    var classificationData = {
+        labels: labels,
+        datasets: [
+            {
+                label: "Count",
+                data: results,
+                backgroundColor: ["rgba(255, 99, 132, 0.2)", "rgba(54, 162, 235, 0.2)"],
+                borderColor: ["rgba(255, 99, 132, 1)", "rgba(54, 162, 235, 1)"],
+                borderWidth: 1,
+            },
+        ],
+    };
+
+
+    var classificationChart = new Chart(chartCtx, {
+        type: "bar",
+        data: classificationData,
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: "top",
+                },
+                title: {
+                    display: true,
+                    text: "User Review Analysis",
+                },
+            },
+        },
+    });
+</script>
+
+{% endblock %}
